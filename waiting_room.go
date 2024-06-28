@@ -103,13 +103,13 @@ type WaitingRoomRoute struct {
 }
 
 type SearchWaitingRoomsParams struct {
-	Name      string
-	Match     string
-	Status    string
-	Order     string
-	Direction string
-	Page      int32
-	PerPage   int32
+	Name      string `json:"name" url:"name,omitempty"`
+	Match     string `json:"match" url:"match,omitempty"`
+	Status    string `json:"status" url:"status,omitempty"`
+	Order     string `json:"order" url:"order,omitempty"`
+	Direction string `json:"direction" url:"direction,omitempty"`
+	Page      int    `json:"page" url:"page,omitempty"`
+	PerPage   int    `json:"per_page" url:"per_page,omitempty"`
 }
 
 // WaitingRoomDetailResponse is the API response, containing a single WaitingRoom.
@@ -198,8 +198,9 @@ func (api *API) ListWaitingRooms(ctx context.Context, zoneID string) ([]WaitingR
 //
 // API reference: https://api.cloudflare.com/#waiting-room-list-waiting-rooms
 func (api *API) SearchWaitingRooms(ctx context.Context, rc *ResourceContainer, params SearchWaitingRoomsParams) ([]WaitingRoom, error) {
-	uri := fmt.Sprintf("/zones/%s/waiting_rooms", rc.Identifier)
-	res, err := api.makeRequestContext(ctx, http.MethodGet, uri, params)
+	uri := buildURI(fmt.Sprintf("/zones/%s/waiting_rooms", rc.Identifier), params)
+
+	res, err := api.makeRequestContext(ctx, http.MethodGet, uri, nil)
 	if err != nil {
 		return []WaitingRoom{}, err
 	}
