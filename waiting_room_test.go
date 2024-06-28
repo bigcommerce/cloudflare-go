@@ -236,6 +236,66 @@ func TestListWaitingRoomsNoResult(t *testing.T) {
 	}
 }
 
+func TestSearchWaitingRooms(t *testing.T) {
+	setup()
+	defer teardown()
+
+	handler := func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, http.MethodGet, r.Method, "Expected method 'GET', got %s", r.Method)
+		w.Header().Set("content-type", "application/json")
+		fmt.Fprintf(w, `{
+			  "success": true,
+			  "errors": [],
+			  "messages": [],
+			  "result": [
+			    %s
+			  ]
+			}
+		`, waitingRoomJSON)
+	}
+
+	mux.HandleFunc("/zones/"+testZoneID+"/waiting_rooms", handler)
+	want := []WaitingRoom{waitingRoom}
+	params := SearchWaitingRoomsParams{
+		Name: "test.com",
+	}
+	rc := ZoneIdentifier(testZoneID)
+
+	actual, err := client.SearchWaitingRooms(context.Background(), rc, params)
+	if assert.NoError(t, err) {
+		assert.Equal(t, want, actual)
+	}
+}
+
+func TestSearchWaitingRoomsNoResult(t *testing.T) {
+	setup()
+	defer teardown()
+
+	handler := func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, http.MethodGet, r.Method, "Expected method 'GET', got %s", r.Method)
+		w.Header().Set("content-type", "application/json")
+		fmt.Fprint(w, `{
+			  "success": true,
+			  "errors": [],
+			  "messages": [],
+			  "result": []
+			}
+		`)
+	}
+
+	mux.HandleFunc("/zones/"+testZoneID+"/waiting_rooms", handler)
+	want := []WaitingRoom{}
+	params := SearchWaitingRoomsParams{
+		Name: "test.com",
+	}
+	rc := ZoneIdentifier(testZoneID)
+
+	actual, err := client.SearchWaitingRooms(context.Background(), rc, params)
+	if assert.NoError(t, err) {
+		assert.Equal(t, want, actual)
+	}
+}
+
 func TestWaitingRoom(t *testing.T) {
 	setup()
 	defer teardown()

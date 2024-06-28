@@ -102,6 +102,16 @@ type WaitingRoomRoute struct {
 	Path string `json:"path"`
 }
 
+type SearchWaitingRoomsParams struct {
+	Name      string
+	Match     string
+	Status    string
+	Order     string
+	Direction string
+	Page      int32
+	PerPage   int32
+}
+
 // WaitingRoomDetailResponse is the API response, containing a single WaitingRoom.
 type WaitingRoomDetailResponse struct {
 	Response
@@ -173,6 +183,23 @@ func (api *API) CreateWaitingRoom(ctx context.Context, zoneID string, waitingRoo
 func (api *API) ListWaitingRooms(ctx context.Context, zoneID string) ([]WaitingRoom, error) {
 	uri := fmt.Sprintf("/zones/%s/waiting_rooms", zoneID)
 	res, err := api.makeRequestContext(ctx, http.MethodGet, uri, nil)
+	if err != nil {
+		return []WaitingRoom{}, err
+	}
+	var r WaitingRoomsResponse
+	err = json.Unmarshal(res, &r)
+	if err != nil {
+		return []WaitingRoom{}, fmt.Errorf("%s: %w", errUnmarshalError, err)
+	}
+	return r.Result, nil
+}
+
+// SearchWaitingRooms returns all Waiting Room for a zone. Allows filterable search parameters.
+//
+// API reference: https://api.cloudflare.com/#waiting-room-list-waiting-rooms
+func (api *API) SearchWaitingRooms(ctx context.Context, rc *ResourceContainer, params SearchWaitingRoomsParams) ([]WaitingRoom, error) {
+	uri := fmt.Sprintf("/zones/%s/waiting_rooms", rc.Identifier)
+	res, err := api.makeRequestContext(ctx, http.MethodGet, uri, params)
 	if err != nil {
 		return []WaitingRoom{}, err
 	}
