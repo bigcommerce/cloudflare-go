@@ -1,6 +1,6 @@
 module github.com/cloudflare/cloudflare-go/internal/tools
 
-go 1.19
+go 1.22.0
 
 require (
 	github.com/breml/bidichk v0.2.3
@@ -57,7 +57,7 @@ require (
 	github.com/chavacava/garif v0.0.0-20220316182200-5cad0b5181d4 // indirect
 	github.com/cilium/ebpf v0.7.0 // indirect
 	github.com/client9/misspell v0.3.4 // indirect
-	github.com/cloudflare/circl v1.3.7 // indirect
+	github.com/cloudflare/circl v1.6.1 // indirect
 	github.com/cosiner/argv v0.1.0 // indirect
 	github.com/cpuguy83/go-md2man/v2 v2.0.2 // indirect
 	github.com/cyphar/filepath-securejoin v0.2.4 // indirect
